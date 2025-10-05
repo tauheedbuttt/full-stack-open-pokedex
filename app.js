@@ -10,8 +10,10 @@ app.get("/version", (req, res) => {
   res.send("1"); // change this string to ensure a new version deployed
 });
 
-app.get("/", (req, res) => {
-  res.sendFile(`${__dirname}/dist/index.html`);
+const path = require("path");
+
+app.get("/", (res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
 app.listen(PORT, () => {
