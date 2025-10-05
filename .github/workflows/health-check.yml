@@ -19,6 +19,9 @@ jobs:
           cookie: "token=asdf1234"
           basic-auth: "login:password"
 
+      - name: Curl the health check URL
+        run: curl -v ${{ secrets.DISCORD_WEBHOOK_URL }}
+
       - name: Notify Discord on Success.
         uses: rjstone/discord-webhook-notify@v2
         if: ${{ success() }}
