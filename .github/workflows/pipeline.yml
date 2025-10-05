@@ -50,3 +50,36 @@ jobs:
           apiKey: ${{ secrets.RENDER_API_KEY }}
           node-version: lts/Jod #optional
           cli-version: 2.2.0 #optional
+
+  tag_release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Bump patch version
+        uses: anothrNick/github-tag-action@1.64.0
+        id: tag_version
+        with:
+          tag-prefix: ""
+          release-type: patch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Bump version and push tag
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        uses: anothrNick/github-tag-action@1.64.0
+        id: tag_push
+        with:
+          tag-prefix: ""
+          release-type: version
+          push-to-remote: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ needs.build.outputs.newTag }}
+          name: Release ${{ needs.build.outputs.newTag }}
