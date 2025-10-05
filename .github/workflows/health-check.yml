@@ -20,12 +20,10 @@ jobs:
           basic-auth: "login:password"
 
       - name: Notify Discord on Success.
-        uses: rjstone/discord-webhook-notify@v2
+        uses: johnnyhuy/actions-discord-git-webhook@main
         if: ${{ success() }}
         with:
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          severity: info
-          details: Health check passed!
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
       - name: Notify Discord on Failure.
         uses: rjstone/discord-webhook-notify@v2
