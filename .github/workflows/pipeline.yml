@@ -38,3 +38,11 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
+
+      - name: Create deployment
+        uses: sws2apps/render-deployment@main
+        with:
+          serviceId: ${{ secrets.RENDER_SERVICE_ID }}
+          apiKey: ${{ secrets.RENDER_API_KEY }}
+          node-version: lts/Jod #optional
+          cli-version: 2.2.0 #optional
