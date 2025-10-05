@@ -95,7 +95,7 @@ jobs:
           severity: info
           details: Version updated!
 
-      - name: Notify Discord on Failure
+      - name: Notify Discord on Failure.
         uses: rjstone/discord-webhook-notify@v2
         if: ${{ failure() }}
         with:
