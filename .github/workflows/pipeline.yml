@@ -50,3 +50,18 @@ jobs:
           apiKey: ${{ secrets.RENDER_API_KEY }}
           node-version: lts/Jod #optional
           cli-version: 2.2.0 #optional
+
+  tag_release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Bump patch version
+        uses: anothrNick/github-tag-action@1.64.0
+        id: tag_version
+        env:
+          TAG_PREFIX: v
+          PRERELEASE: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
