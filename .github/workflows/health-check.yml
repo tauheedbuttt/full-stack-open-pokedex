@@ -25,7 +25,7 @@ jobs:
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
-      - name: Notify Discord on Failure.
+      - name: Notify Discord on Failure
         uses: rjstone/discord-webhook-notify@v2
         if: ${{ failure() }}
         with:
