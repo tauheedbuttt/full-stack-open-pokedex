@@ -61,25 +61,7 @@ jobs:
       - name: Bump patch version
         uses: anothrNick/github-tag-action@1.64.0
         id: tag_version
-        with:
-          tag-prefix: ""
-          release-type: patch
         env:
+          TAG_PREFIX: v
+          PRERELEASE: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Bump version and push tag
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        uses: anothrNick/github-tag-action@1.64.0
-        id: tag_push
-        with:
-          tag-prefix: ""
-          release-type: version
-          push-to-remote: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create Release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ needs.build.outputs.newTag }}
-          name: Release ${{ needs.build.outputs.newTag }}
