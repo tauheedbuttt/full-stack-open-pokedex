@@ -64,6 +64,5 @@ jobs:
         id: tag_version
         env:
           TAG_PREFIX: v
-          PRERELEASE: true
-          DRY_RUN: true
+          DEFAULT_BUMP: patch
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
