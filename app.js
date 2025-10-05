@@ -12,7 +12,7 @@ app.get("/version", (req, res) => {
 
 const path = require("path");
 
-app.get("/", (res) => {
+app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
