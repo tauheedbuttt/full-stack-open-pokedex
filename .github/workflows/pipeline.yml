@@ -55,13 +55,21 @@ jobs:
           node-version: lts/Jod #optional
           cli-version: 2.2.0 #optional
 
-      - name: Notify Discord
+      - name: Notify Discord on Success
         uses: rjstone/discord-webhook-notify@v2
         if: ${{ success() }}
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_URL }}
           severity: info
           details: Build passed!
+
+      - name: Notify Discord on Failure
+        uses: rjstone/discord-webhook-notify@v2
+        if: ${{ failure() }}
+        with:
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          severity: error
+          details: Build failed!
 
   tag_release:
     needs: [build]
@@ -86,3 +94,11 @@ jobs:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK_URL }}
           severity: info
           details: Version updated!
+
+      - name: Notify Discord on Failure
+        uses: rjstone/discord-webhook-notify@v2
+        if: ${{ failure() }}
+        with:
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          severity: error
+          details: Version bump failed!
