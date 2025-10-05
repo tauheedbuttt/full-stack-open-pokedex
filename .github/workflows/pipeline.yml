@@ -47,7 +47,7 @@ jobs:
           retention-days: 30
 
       - name: Create Render deployment
-        if: ${{ env.IS_COMMIT_WITH_SKIP == false && env.IS_MAIN_BRANCH }}
+        if: ${{ env.IS_COMMIT_WITH_SKIP != 'true' && env.IS_MAIN_BRANCH == 'true' }}
         uses: sws2apps/render-deployment@main
         with:
           serviceId: ${{ secrets.RENDER_SERVICE_ID }}
@@ -79,7 +79,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Bump patch version
-        if: ${{ env.IS_COMMIT_WITH_SKIP == false && env.IS_MAIN_BRANCH }}
+        if: ${{ env.IS_COMMIT_WITH_SKIP != 'true' && env.IS_MAIN_BRANCH == 'true' }}
         uses: anothrNick/github-tag-action@1.64.0
         id: tag_version
         env:
