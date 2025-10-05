@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
 
 jobs:
   build:
@@ -40,6 +43,7 @@ jobs:
           retention-days: 30
 
       - name: Create Render deployment
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         uses: sws2apps/render-deployment@main
         with:
           serviceId: ${{ secrets.RENDER_SERVICE_ID }}
