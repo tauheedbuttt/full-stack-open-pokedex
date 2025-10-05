@@ -1,25 +1,72 @@
-name: Testing stuff
+name: Deployment Pipeline
+
+env:
+  IS_COMMIT_WITH_SKIP: ${{ contains(join(github.event.commits.*.message, ', '), '#skip') }}
+  IS_MAIN_BRANCH: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
 on:
   push:
     branches:
       - main
-
-env:
-  CONDITION: ${{ contains(join(github.event.commits.*.message, ', '), '#skip') }}
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
 
 jobs:
-  a_test_job:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: github context
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Check style
+        run: npm run eslint
+
+      - name: Run tests
+        run: npm test
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Run e2e tests
+        run: npm run test:e2e
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Create Render deployment
+        if: ${{ env.IS_COMMIT_WITH_SKIP || env.IS_MAIN_BRANCH }}
+        uses: sws2apps/render-deployment@main
+        with:
+          serviceId: ${{ secrets.RENDER_SERVICE_ID }}
+          apiKey: ${{ secrets.RENDER_API_KEY }}
+          node-version: lts/Jod #optional
+          cli-version: 2.2.0 #optional
+
+  tag_release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Bump patch version
+        if: ${{ env.IS_COMMIT_WITH_SKIP || env.IS_MAIN_BRANCH }}
+        uses: anothrNick/github-tag-action@1.64.0
+        id: tag_version
         env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - name: commits
-        env:
-          COMMITS: ${{ toJson(github.event.commits) }}
-        run: echo "$COMMITS"
-      - name: condition
-        run: echo  "$CONDITION"
+          TAG_PREFIX: v
+          DEFAULT_BUMP: patch
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
